@@ -1,0 +1,89 @@
+/* ===== GENERAL LAYOUT ===== */
+
+body {
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 1000px;
+}
+
+/* ===== PAGE HEADERS ===== */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ===== TABLE STYLING ===== */
+
+.table {
+    background-color: white;
+}
+
+/* ===== TIMELINE ===== */
+
+.timeline {
+    position: relative;
+    margin: 20px 0;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -3px;
+    top: 4px;
+    width: 15px;
+    height: 15px;
+    background: #0d6efd;
+    border-radius: 50%;
+}
+
+.timeline-content {
+    margin-left: 25px;
+}
+
+.timeline-time {
+    font-size: 0.85rem;
+    color: gray;
+}
+
+/* ===== BUTTON IMPROVEMENTS ===== */
+
+.btn {
+    border-radius: 6px;
+}
+
+/* ===== INCIDENT TITLE LINKS ===== */
+
+.incident-link {
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.incident-link:hover {
+    text-decoration: underline;
+}
+
+/* ===== SCROLLABLE TIMELINE ===== */
+
+.timeline {
+    max-height: 400px;
+    overflow-y: auto;
+}

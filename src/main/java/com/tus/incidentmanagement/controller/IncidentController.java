@@ -67,5 +67,12 @@ public class IncidentController {
 
         return ResponseEntity.ok(incident);
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<IncidentEntity> getIncident(@PathVariable Long id) {
+
+        IncidentEntity incident = incidentService.getIncidentById(id);
+
+        return ResponseEntity.ok(incident);
+    }
 
 }
