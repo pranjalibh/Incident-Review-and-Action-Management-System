@@ -36,7 +36,8 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/admin.html",
                                 "/incidents.html",
-                                "/reporter.html"
+                                "/reporter.html",
+                                "/manager.html"
                         ).permitAll()
 
                         // ROLE-BASED ACCESS

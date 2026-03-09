@@ -23,4 +23,13 @@ public class IncidentService {
         incident.setStatus("OPEN"); // required by user story
         return incidentRepository.save(incident);
     }
+    public IncidentEntity toggleBlameless(Long id) {
+
+        IncidentEntity incident = incidentRepository.findIncidentById(id)
+                .orElseThrow(() -> new RuntimeException("Incident not found"));
+
+        incident.setBlameless(!incident.isBlameless());
+
+        return incidentRepository.save(incident);
+    }
 }
