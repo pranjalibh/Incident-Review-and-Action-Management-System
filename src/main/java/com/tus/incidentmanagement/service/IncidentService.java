@@ -18,4 +18,9 @@ public class IncidentService {
     public List<IncidentEntity> getAllIncidents() {
         return (List<IncidentEntity>) incidentRepository.findAll();
     }
+
+    public IncidentEntity createIncident(IncidentEntity incident) {
+        incident.setStatus("OPEN"); // required by user story
+        return incidentRepository.save(incident);
+    }
 }

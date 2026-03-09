@@ -33,7 +33,6 @@ public class IncidentEntity {
     @JoinColumn(name = "created_by", nullable = false)
     private UserEntity createdBy;
 
-    public IncidentEntity() {}
 
     public Long getId() {
         return id;
