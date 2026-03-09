@@ -7,62 +7,38 @@ import jakarta.persistence.*;
 @Table(name = "users")
 public class UserEntity {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        @Column(nullable = false, unique = true)
-        private String username;
+    @Column(nullable = false, unique = true)
+    private String username;
 
-        @Column(nullable = false)
-        private String password;
+    @Column(nullable = false)
+    private String password;
 
-        @Column(name = "role", nullable = false)
-        private String role;
+    @Column(nullable = false)
+    private String role;
 
-        @Column(name = "created_at")
-        private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-        public UserEntity() {}
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+    public Long getId() { return id; }
 
-    public String getRole() {
-        return role;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    public void setRole(String role) {
-        this.role = role;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public String getPassword() {
-        return password;
-    }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
 }
-
