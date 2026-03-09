@@ -25,11 +25,14 @@ public class IncidentService {
     }
     public IncidentEntity toggleBlameless(Long id) {
 
-        IncidentEntity incident = incidentRepository.findIncidentById(id)
-                .orElseThrow(() -> new RuntimeException("Incident not found"));
-
+        IncidentEntity incident = getIncidentById(id);
         incident.setBlameless(!incident.isBlameless());
 
         return incidentRepository.save(incident);
+    }
+    public IncidentEntity getIncidentById(Long id) {
+
+        return incidentRepository.findIncidentById(id)
+                .orElseThrow(() -> new RuntimeException("Incident not found"));
     }
 }
