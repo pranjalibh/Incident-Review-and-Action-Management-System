@@ -51,5 +51,21 @@ public class IncidentController {
 
         return ResponseEntity.ok(savedIncident);
     }
+    @PatchMapping("/{id}/blameless")
+    public ResponseEntity<IncidentEntity> toggleBlameless(@PathVariable Long id) {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String username = authentication.getName();
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if(!user.getRole().equals("MANAGER")) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        IncidentEntity incident = incidentService.toggleBlameless(id);
+
+        return ResponseEntity.ok(incident);
+    }
 
 }
