@@ -21,10 +21,13 @@ function redirectAfterLogin(role) {
             window.location.href = "/admin.html";
             break;
         case "REPORTER":
-            window.location.href = "/incidents.html";
+            window.location.href = "/reporter.html";
             break;
         case "REVIEWER":
-            window.location.href = "/review.html";
+            window.location.href = "/reviewer.html";
+            break;
+        case "MANAGER":
+            window.location.href = "/manager.html";
             break;
         default:
             window.location.href = "/login.html";

@@ -35,14 +35,15 @@ public class SecurityConfig {
                                 "/js/**",
                                 "/images/**",
                                 "/admin.html",
-                                "/incidents.html"
+                                "/incidents.html",
+                                "/reporter.html"
                         ).permitAll()
 
                         // ROLE-BASED ACCESS
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                       /* .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/reporter/**").hasRole("REPORTER")
                         .requestMatchers("/api/reviewer/**").hasRole("REVIEWER")
-
+*/
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter,
