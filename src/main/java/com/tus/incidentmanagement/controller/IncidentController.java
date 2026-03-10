@@ -75,4 +75,32 @@ public class IncidentController {
         return ResponseEntity.ok(incident);
     }
 
+    @PatchMapping("/{id}/close")
+    public ResponseEntity<?> closeIncident(@PathVariable Long id) {
+
+        try {
+
+            Authentication authentication =
+                    SecurityContextHolder.getContext().getAuthentication();
+
+            String username = authentication.getName();
+
+            UserEntity user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            if(!user.getRole().equals("REVIEWER")) {
+                return ResponseEntity.badRequest().body("You are not a reviewer");
+            }
+
+            IncidentEntity incident = incidentService.closeIncident(id);
+
+            return ResponseEntity.ok(incident);
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+
+        }
+    }
+
 }

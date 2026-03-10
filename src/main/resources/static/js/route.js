@@ -29,6 +29,9 @@ function redirectAfterLogin(role) {
         case "MANAGER":
             window.location.href = "/manager.html";
             break;
+        case "USER":
+            window.location.href = "/user.html";
+            break;
         default:
             window.location.href = "/login.html";
     }

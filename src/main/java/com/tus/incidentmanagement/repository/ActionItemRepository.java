@@ -20,4 +20,18 @@ public interface ActionItemRepository extends CrudRepository<ActionItemEntity, L
     @Query("UPDATE ActionItemEntity a SET a.completed = true WHERE a.id = :id")
     void completeAction(@Param("id") Long id);
 
+    @Query("""
+            SELECT COUNT(a)
+            FROM ActionItemEntity a
+            WHERE a.incident.id = :incidentId
+            AND a.completed = false
+            """)
+    long countOpenActions(@Param("incidentId") Long incidentId);
+
+    @Query("""
+        SELECT a FROM ActionItemEntity a
+        JOIN FETCH a.incident
+        WHERE a.assignedTo.username = :username
+        """)
+    List<ActionItemEntity> findByAssignedUsername(@Param("username") String username);
 }

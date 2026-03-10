@@ -15,6 +15,9 @@
     <button class="btn btn-outline-secondary mb-3" onclick="goBack()">Back</button>
 
     <h3 id="incidentTitle"></h3>
+    <button class="btn btn-danger" onclick="closeIncident()">
+        Close Incident
+    </button>
 
     <p>
         <strong>Severity:</strong> <span id="severity"></span><br>
@@ -153,7 +156,7 @@
 
 <script>
 
-    protectPage(["REPORTER","ADMIN","MANAGER","REVIEWER"]);
+    protectPage(["REPORTER","ADMIN","MANAGER","REVIEWER","USER"]);
 
     const token = getToken();
 
@@ -411,7 +414,7 @@
 
             error: function(xhr) {
 
-                alert(xhr.responseText);
+                alert("Check due date should be within SLA");
 
             }
 
@@ -439,6 +442,33 @@
         }
 
     });
+}
+function closeIncident() {
+
+    $.ajax({
+
+        url: "/api/admin/incidents/" + incidentId + "/close",
+        type: "PATCH",
+
+        headers: {
+            "Authorization": "Bearer " + token
+        },
+
+        success: function() {
+
+            alert("Incident closed successfully");
+            loadIncident();
+
+        },
+
+        error: function(xhr) {
+
+            alert(xhr.responseText);
+
+        }
+
+    });
+
 }
 
 

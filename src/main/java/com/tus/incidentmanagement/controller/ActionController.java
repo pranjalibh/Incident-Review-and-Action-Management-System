@@ -1,9 +1,11 @@
 package com.tus.incidentmanagement.controller;
 
+import org.springframework.security.core.Authentication;
 import com.tus.incidentmanagement.entity.ActionItemEntity;
 import com.tus.incidentmanagement.model.ActionRequest;
 import com.tus.incidentmanagement.service.ActionItemService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,6 +46,16 @@ public class ActionController {
         ActionItemEntity action = actionService.completeAction(actionId);
 
         return ResponseEntity.ok(action);
+    }
+
+    @GetMapping("/my/actions")
+    public List<ActionItemEntity> getMyActions() {
+        System.out.println("Inside get user action item controller");
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        System.out.println("user name" + username);
+        return actionService.getMyActions(username);
     }
 
 }

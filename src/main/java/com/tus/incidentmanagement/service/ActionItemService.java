@@ -26,20 +26,21 @@ public class ActionItemService {
         this.userRepository = userRepository;
     }
 
-    private boolean validateSla(String severity, LocalDateTime dueDate) {
+    private boolean validateSla(IncidentEntity incident, LocalDateTime dueDate) {
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = incident.getCreatedAt();
+        String severity=incident.getSeverity();
 
         switch(severity) {
 
             case "CRITICAL":
-                return dueDate.isBefore(now.plusHours(12));
-
-            case "HIGH":
                 return dueDate.isBefore(now.plusHours(24));
 
-            case "MEDIUM":
+            case "HIGH":
                 return dueDate.isBefore(now.plusHours(48));
+
+            case "MEDIUM":
+                return dueDate.isBefore(now.plusHours(120));
 
             default:
                 return true;
@@ -55,7 +56,7 @@ public class ActionItemService {
         IncidentEntity incident = incidentRepository.findIncidentById(incidentId)
                 .orElseThrow(() -> new RuntimeException("Incident not found"));
 
-        if(!validateSla(incident.getSeverity(), dueDate)) {
+        if(!validateSla(incident, dueDate)) {
             throw new RuntimeException("SLA violation: due date exceeds allowed limit");
         }
         UserEntity user = userRepository.findByUsername(username)
@@ -78,5 +79,9 @@ public class ActionItemService {
     public ActionItemEntity completeAction(Long actionId) {
         actionItemRepository.completeAction(actionId);
         return actionItemRepository.findActionById(actionId);
+    }
+
+    public List<ActionItemEntity> getMyActions(String username) {
+        return actionItemRepository.findByAssignedUsername(username);
     }
 }
