@@ -1,6 +1,7 @@
 package com.tus.incidentmanagement.service;
 
 import com.tus.incidentmanagement.entity.IncidentEntity;
+import com.tus.incidentmanagement.repository.ActionItemRepository;
 import com.tus.incidentmanagement.repository.IncidentRepository;
 import org.springframework.stereotype.Service;
 
@@ -10,10 +11,14 @@ import java.util.List;
 public class IncidentService {
 
     private final IncidentRepository incidentRepository;
+    private final ActionItemRepository actionItemRepository;
 
-    public IncidentService(IncidentRepository incidentRepository) {
+    public IncidentService(IncidentRepository incidentRepository,
+                           ActionItemRepository actionItemRepository) {
         this.incidentRepository = incidentRepository;
+        this.actionItemRepository = actionItemRepository;
     }
+
 
     public List<IncidentEntity> getAllIncidents() {
         return (List<IncidentEntity>) incidentRepository.findAll();
@@ -34,5 +39,19 @@ public class IncidentService {
 
         return incidentRepository.findIncidentById(id)
                 .orElseThrow(() -> new RuntimeException("Incident not found"));
+    }
+    public IncidentEntity closeIncident(Long id) {
+
+        IncidentEntity incident = getIncidentById(id);
+
+        long openActions = actionItemRepository.countOpenActions(id);
+
+        if (openActions > 0) {
+            throw new RuntimeException("Cannot close incident. All action items must be completed.");
+        }
+
+        incident.setStatus("CLOSED");
+
+        return incidentRepository.save(incident);
     }
 }

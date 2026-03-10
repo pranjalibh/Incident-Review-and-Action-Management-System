@@ -38,7 +38,9 @@ public class SecurityConfig {
                                 "/incidents.html",
                                 "/reporter.html",
                                 "/manager.html",
-                                "/incident-details.html"
+                                "/incident-details.html",
+                                "/reviewer.html",
+                                "/user.html"
                         ).permitAll()
 
                         // ROLE-BASED ACCESS
