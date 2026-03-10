@@ -52,4 +52,11 @@ public class AuthService {
     public List<UserEntity> getUsers() {
        return userRepository.findAll();
     }
+
+    public UserEntity createUser(UserEntity user) {
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        return userRepository.save(user);
+    }
 }

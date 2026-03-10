@@ -50,11 +50,9 @@ public class ActionController {
 
     @GetMapping("/my/actions")
     public List<ActionItemEntity> getMyActions() {
-        System.out.println("Inside get user action item controller");
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        System.out.println("user name" + username);
         return actionService.getMyActions(username);
     }
 
