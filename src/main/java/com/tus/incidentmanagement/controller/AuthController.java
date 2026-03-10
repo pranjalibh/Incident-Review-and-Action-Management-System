@@ -34,4 +34,12 @@ public class AuthController {
     public List<UserEntity> getUsers() {
         return authService.getUsers();
     }
+
+    @PostMapping("/users")
+    public ResponseEntity<UserEntity> createUser(@RequestBody UserEntity user) {
+
+        UserEntity createdUser = authService.createUser(user);
+
+        return ResponseEntity.ok(createdUser);
+    }
 }
