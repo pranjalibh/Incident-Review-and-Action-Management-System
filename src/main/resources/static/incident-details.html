@@ -23,25 +23,44 @@
 
     <hr>
 
+    <!-- TIMELINE -->
+
     <h4>Timeline</h4>
 
     <ul class="list-group mb-3" id="timelineList"></ul>
 
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#timelineModal">
+    <button class="btn btn-primary mb-4"
+            data-bs-toggle="modal"
+            data-bs-target="#timelineModal">
         Add Timeline Event
+    </button>
+
+    <hr>
+
+    <!-- ACTION ITEMS -->
+
+    <h4>Action Items</h4>
+
+    <ul class="list-group mb-3" id="actionList"></ul>
+
+    <button class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#actionModal">
+        Assign Action Item
     </button>
 
 </div>
 
 
-<!-- Modal -->
+<!-- TIMELINE MODAL -->
+
 <div class="modal fade" id="timelineModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
 
             <div class="modal-header">
                 <h5 class="modal-title">Add Timeline Event</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
@@ -76,6 +95,56 @@
 </div>
 
 
+
+<!-- ACTION MODAL -->
+
+<div class="modal fade" id="actionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Assign Action Item</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="text"
+                       id="actionDescription"
+                       class="form-control mb-3"
+                       placeholder="Action description">
+
+                <select id="assignedUser"
+                        class="form-control mb-3">
+                    <option value="">Select User</option>
+                </select>
+
+                <input type="datetime-local"
+                       id="dueDate"
+                       class="form-control">
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button class="btn btn-success"
+                        onclick="createAction()">
+                    Save
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="/js/auth.js"></script>
 <script src="/js/route.js"></script>
@@ -97,8 +166,9 @@
     }
 
 
+
     /* ======================
-       LOAD INCIDENT DETAILS
+       LOAD INCIDENT
     ====================== */
 
     function loadIncident() {
@@ -113,16 +183,10 @@
             },
 
             success: function(incident) {
-
+                incidentData = incident;
                 $("#incidentTitle").text(incident.title);
                 $("#severity").text(incident.severity);
                 $("#status").text(incident.status);
-
-            },
-
-            error: function(xhr) {
-
-                console.error("Failed to load incident", xhr);
 
             }
 
@@ -131,8 +195,9 @@
     }
 
 
+
     /* ======================
-       LOAD TIMELINE EVENTS
+       LOAD TIMELINE
     ====================== */
 
     function loadTimeline() {
@@ -146,11 +211,11 @@
                 "Authorization": "Bearer " + token
             },
 
-            success: function(data) {
+            success: function(events) {
 
                 let items = "";
 
-                data.forEach(event => {
+                events.forEach(event => {
 
                     items += `
                         <li class="list-group-item">
@@ -163,17 +228,12 @@
 
                 $("#timelineList").html(items);
 
-            },
-
-            error: function(xhr) {
-
-                console.error("Failed to load timeline", xhr);
-
             }
 
         });
 
     }
+
 
 
     /* ======================
@@ -203,22 +263,13 @@
 
             success: function() {
 
-                $("#description").val("");
-                $("#eventTime").val("");
+                loadTimeline();
 
                 const modal = bootstrap.Modal.getInstance(
                     document.getElementById("timelineModal")
                 );
 
                 modal.hide();
-
-                loadTimeline();
-
-            },
-
-            error: function(xhr) {
-
-                console.error("Failed to save timeline event", xhr);
 
             }
 
@@ -227,12 +278,179 @@
     }
 
 
+
+    /* ======================
+       LOAD USERS
+    ====================== */
+
+    function loadUsers() {
+
+        $.ajax({
+
+            url: "/auth/users",
+            type: "GET",
+
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+
+            success: function(users) {
+
+                let options = "<option value=''>Select User</option>";
+
+                users.forEach(user => {
+
+                    options += `
+                        <option value="${user.username}">
+                            ${user.username}
+                        </option>
+                    `;
+
+                });
+
+                $("#assignedUser").html(options);
+
+            }
+
+        });
+
+    }
+
+
+
+    /* ======================
+       LOAD ACTION ITEMS
+    ====================== */
+
+    function loadActions() {
+
+        $.ajax({
+
+            url: "/api/incidents/" + incidentId + "/actions",
+            type: "GET",
+
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+
+            success: function(actions) {
+
+                let rows = "";
+
+                actions.forEach(action => {
+
+                    rows += `
+                        <li class="list-group-item d-flex justify-content-between">
+
+                            <div>
+                                <input type="checkbox"
+                                ${action.completed ? "checked" : ""}
+                                 onchange="completeAction(${action.id})">
+                                ${action.description}
+                                ${incidentData && !incidentData.blameless
+                                ? `<small class="text-muted">(${action.assignedTo?.username || "Unassigned"})</small>`: ""}
+
+                            </div>
+
+                            <span class="badge bg-warning">
+                                Due: ${action.dueDate}
+                            </span>
+
+                        </li>
+                    `;
+
+                });
+
+                $("#actionList").html(rows);
+
+            }
+
+        });
+
+    }
+
+
+
+    /* ======================
+       CREATE ACTION ITEM
+    ====================== */
+
+    function createAction() {
+
+        const payload = {
+
+            description: $("#actionDescription").val(),
+            assignedTo: $("#assignedUser").val(),
+            dueDate: $("#dueDate").val()
+
+        };
+
+        $.ajax({
+
+            url: "/api/incidents/" + incidentId + "/actions",
+            type: "POST",
+
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+
+            contentType: "application/json",
+            data: JSON.stringify(payload),
+
+            success: function() {
+
+                loadActions();
+
+                const modal = bootstrap.Modal.getInstance(
+                    document.getElementById("actionModal")
+                );
+
+                modal.hide();
+
+            },
+
+            error: function(xhr) {
+
+                alert(xhr.responseText);
+
+            }
+
+        });
+
+    }
+
+    function completeAction(actionId) {
+
+    $.ajax({
+
+        url: "/api/incidents/actions/" + actionId + "/complete",
+        type: "PUT",
+
+        headers: {
+            "Authorization": "Bearer " + token
+        },
+
+        success: function () {
+            loadActions();
+        },
+
+        error: function(xhr) {
+            alert(xhr.responseText);
+        }
+
+    });
+}
+
+
+
     /* ======================
        INITIAL PAGE LOAD
     ====================== */
 
     loadIncident();
     loadTimeline();
+    loadUsers();
+    loadActions();
 
 </script>
 
