@@ -1,120 +1,74 @@
-```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
     <title>User Dashboard</title>
 
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body class="bg-light">
+<body>
 
 <div class="container mt-5">
 
-    <div class="d-flex justify-content-between align-items-center">
-        <h3>My Action Items</h3>
-        <button class="btn btn-danger" onclick="logout()">Logout</button>
+    <!-- Header -->
+   <!-- <div class="page-header">
+        <h2>My Action Items</h2>
+        <button id="logoutBtn" class="btn btn-danger">Logout</button>
+    </div>-->
+    <div class="page-header">
+
+        <h2>My Action Items</h2>
+
+        <div class="d-flex align-items-center gap-2">
+            <button id="darkModeToggle" class="btn btn-outline-secondary">
+                🌙
+            </button>
+            <button id="logoutBtn" class="btn btn-danger">
+                Logout
+            </button>
+        </div>
+
     </div>
 
-    <hr>
+    <!-- Card Wrapper -->
+    <div class="card">
+        <div class="card-body">
 
-    <table class="table table-bordered table-striped">
+            <table class="table table-hover" id="actionTable">
 
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Action Item</th>
-            <th>Incident</th>
-            <th>Due Date</th>
-            <th>Status</th>
-        </tr>
-        </thead>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Action Item</th>
+                    <th>Incident</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
 
-        <tbody id="actionTableBody"></tbody>
+                <tbody id="actionTableBody"></tbody>
 
-    </table>
+            </table>
+
+        </div>
+    </div>
 
 </div>
 
-
+<!-- jQuery FIRST -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/route.js"></script>
 
-<script>
-
-    console.log("User dashboard loaded");
-
-    protectPage(["REPORTER","USER"]);
-
-    const token = getToken();
-
-    function loadMyActions() {
-
-        console.log("Calling actions API...");
-
-        $.ajax({
-
-            url: "/api/incidents/my/actions",
-            type: "GET",
-
-            headers: {
-                "Authorization": "Bearer " + token
-            },
-
-            success: function(actions) {
-
-                console.log("Actions received:", actions);
-
-                let rows = "";
-
-                actions.forEach(action => {
-
-                    const statusLabel = action.completed
-                        ? `<span class="badge bg-success">Completed</span>`
-                        : `<span class="badge bg-warning text-dark">Open</span>`;
-
-                    rows += `
-                        <tr>
-                            <td>${action.id}</td>
-
-                            <td>${action.description}</td>
-
-                            <td>
-                                <a href="/incident-details.html?id=${action.incident.id}">
-                                    ${action.incident.title}
-                                </a>
-                            </td>
-
-                            <td>${action.dueDate}</td>
-
-                            <td>${statusLabel}</td>
-                        </tr>
-                    `;
-                });
-
-                $("#actionTableBody").html(rows);
-            },
-
-            error: function(xhr) {
-
-                console.log("API error:", xhr.status, xhr.responseText);
-
-                if (xhr.status === 401 || xhr.status === 403) {
-                    alert("Session expired. Please login again.");
-                    logout();
-                }
-            }
-
-        });
-
-    }
-
-    loadMyActions();
-
-</script>
+<!-- JS -->
+<script src="js/auth.js"></script>
+<script src="js/route.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/user.js"></script>
 
 </body>
 </html>
-```
