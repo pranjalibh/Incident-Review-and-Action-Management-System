@@ -1,0 +1,321 @@
+/* ===== BASE / GLOBAL ===== */
+
+/* ===== APP BACKGROUND ===== */
+
+body {
+     background: linear-gradient(to bottom, #eef2f7, #e2e8f0);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.container {
+    max-width: 1100px;
+    padding-top: 20px;
+}
+
+
+
+/* ===== MODERN CARDS ===== */
+
+.card {
+    border: none;
+    border-radius: 10px;
+    background-color: #fcfdff;
+
+    box-shadow:
+        0 2px 6px rgba(0,0,0,0.05),
+        0 8px 20px rgba(0,0,0,0.05);
+
+    transition: all 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+.card-body {
+    padding: 1.5rem;
+}
+
+/* ===== PAGE HEADER ===== */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h2, h3 {
+    font-weight: 600;
+    letter-spacing: -0.3px;
+}
+/* ===== TABLE ===== */
+
+.table {
+    background: transparent;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead {
+    background-color: #f1f5f9;
+    font-weight: 600;
+}
+
+.table tbody tr {
+    background: #ffffff;
+    border-radius: 8px;
+    transition: all 0.15s ease;
+}
+
+.table tbody tr:hover {
+    background-color: #f9fafb;
+}
+.table td, .table th {
+    padding: 12px;
+}
+
+/* ===== TIMELINE ===== */
+
+.timeline {
+    position: relative;
+    margin: 20px 0;
+    padding-left: 30px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: #e5e7eb; /* softer line */
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -3px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    background: #2563eb; /* refined blue */
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px #f6f8fb; /* ring effect */
+}
+
+.timeline-content {
+    margin-left: 25px;
+}
+
+.timeline-time {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+/* ===== BUTTONS ===== */
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border: none;
+}
+
+.btn-danger {
+    background: #ef4444;
+    border: none;
+}
+/* ===== LINKS ===== */
+
+.incident-link {
+    text-decoration: none;
+    font-weight: 500;
+    color: #2563eb;
+}
+
+.incident-link:hover {
+    text-decoration: underline;
+}
+/* ===== FORMS ===== */
+
+.form-control {
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+.form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 1px #2563eb;
+}
+/* ===== SCROLLBAR ===== */
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+.form-check-input:checked {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+/* ===== ASSIGNED USER (CLEAN VERSION) ===== */
+
+.assigned-user {
+    display: flex;
+    align-items: center;
+    margin-top: 4px;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.user-icon {
+    margin-right: 6px;
+}
+
+.assigned-text {
+    font-weight: 500;
+}
+/* ===== INLINE ACTION ITEM ===== */
+
+.action-text {
+    font-weight: 500;
+}
+
+.assigned-inline {
+    font-size: 0.8rem;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 5px;
+}
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+/* ===== DARK MODE (SAFE VERSION) ===== */
+
+body.dark-mode {
+    background: #0f172a;
+    color: #e2e8f0;
+}
+
+/* Cards */
+body.dark-mode .card {
+    background-color: #1e293b;
+    color: #e2e8f0;
+}
+
+/* Tables
+body.dark-mode .table {
+    background-color: #1e293b;
+    color: #e2e8f0;
+}*/
+
+
+body.dark-mode .table tbody tr:hover {
+    background-color: #334155;
+}
+
+/* Forms */
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    border: 1px solid #334155;
+}
+
+/* Links */
+body.dark-mode .incident-link {
+    color: #60a5fa;
+}
+
+/* Small UI elements */
+body.dark-mode .assigned-inline {
+    background: #334155;
+    color: #e2e8f0;
+}
+
+body.dark-mode .timeline::before {
+    background: #334155;
+}
+#incidentTitle {
+    margin: 0;
+}
+/* ===== DARK MODE TABLE FINAL FIX ===== */
+
+body.dark-mode .table {
+    background: transparent;
+    color: #e2e8f0;
+}
+body.dark-mode .table th {
+    font-weight: 600;
+}
+
+body.dark-mode .table thead {
+    background-color: #334155;
+    color: #e2e8f0;
+}
+
+body.dark-mode .table tbody tr {
+    background-color: #1e293b;
+}
+
+body.dark-mode .table tbody tr:hover {
+    background-color: #334155;
+}
+
+body.dark-mode .table td,
+body.dark-mode .table th {
+    color: #e2e8f0;
+    border-color: #334155;
+}
+/* ===== DARK MODE LIST ITEMS ===== */
+
+body.dark-mode .list-group-item {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
+}
+
+/* ===== DARK MODE MODAL FIX ===== */
+
+body.dark-mode .modal-content {
+    background-color: #1e293b;
+    color: #e2e8f0;
+}
+
+body.dark-mode .modal-header,
+body.dark-mode .modal-footer {
+    border-color: #334155;
+}
+
+body.dark-mode .modal-backdrop {
+    background-color: rgba(0,0,0,0.8);
+}
+/* ===== FORCE DARK TABLE (BOOTSTRAP OVERRIDE) ===== */
+
+body.dark-mode .table {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: #1e293b;
+    --bs-table-hover-bg: #334155;
+    --bs-table-color: #e2e8f0;
+}
+
+body.dark-mode .table > :not(caption) > * > * {
+    background-color: transparent !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+}
