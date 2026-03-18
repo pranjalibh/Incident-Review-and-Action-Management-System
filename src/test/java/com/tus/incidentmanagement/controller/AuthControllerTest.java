@@ -3,6 +3,7 @@ package com.tus.incidentmanagement.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tus.incidentmanagement.dto.LoginRequestDTO;
 import com.tus.incidentmanagement.dto.LoginResponseDTO;
+import com.tus.incidentmanagement.dto.UserDTO;
 import com.tus.incidentmanagement.entity.UserEntity;
 import com.tus.incidentmanagement.service.AuthService;
 import org.junit.jupiter.api.Test;
@@ -68,11 +69,11 @@ class AuthControllerTest {
     @Test
     void getUsers_shouldReturnList() throws Exception {
 
-        UserEntity user1 = new UserEntity();
+        UserDTO user1 = new UserDTO();
         user1.setUsername("john");
         user1.setRole("USER");
 
-        UserEntity user2 = new UserEntity();
+        UserDTO user2 = new UserDTO();
         user2.setUsername("mary");
         user2.setRole("ADMIN");
 
@@ -90,7 +91,7 @@ class AuthControllerTest {
     @Test
     void createUser_shouldReturnUser() throws Exception {
 
-        UserEntity user = new UserEntity();
+        UserDTO user = new UserDTO();
         user.setUsername("john");
         user.setPassword("123");
         user.setRole("USER");

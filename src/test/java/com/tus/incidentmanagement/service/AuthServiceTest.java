@@ -2,9 +2,10 @@ package com.tus.incidentmanagement.service;
 
 import com.tus.incidentmanagement.config.JwtService;
 import com.tus.incidentmanagement.dto.LoginResponseDTO;
+import com.tus.incidentmanagement.dto.UserDTO;
 import com.tus.incidentmanagement.entity.UserEntity;
 import com.tus.incidentmanagement.exception.InvalidCredentialsException;
-import com.tus.incidentmanagement.repository.UserRepository;
+import com.tus.incidentmanagement.dao.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -128,7 +129,7 @@ class AuthServiceTest {
         when(userRepository.save(any(UserEntity.class)))
                 .thenReturn(user);
 
-        UserEntity savedUser = authService.createUser(user);
+        UserDTO savedUser = authService.createUser(user);
 
         assertNotNull(savedUser);
         verify(passwordEncoder).encode("plainPassword");

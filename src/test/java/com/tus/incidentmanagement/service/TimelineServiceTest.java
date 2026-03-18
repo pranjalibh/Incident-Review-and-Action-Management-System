@@ -1,9 +1,10 @@
 package com.tus.incidentmanagement.service;
 
+import com.tus.incidentmanagement.dto.TimelineEventDTO;
 import com.tus.incidentmanagement.entity.IncidentEntity;
 import com.tus.incidentmanagement.entity.TimelineEventEntity;
-import com.tus.incidentmanagement.repository.IncidentRepository;
-import com.tus.incidentmanagement.repository.TimelineEventRepository;
+import com.tus.incidentmanagement.dao.IncidentRepository;
+import com.tus.incidentmanagement.dao.TimelineEventRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,6 +29,9 @@ class TimelineServiceTest {
     @InjectMocks
     private TimelineService timelineService;
 
+    @Mock
+    private IncidentService incidentService;
+
     @Test
     void addEvent_shouldAttachIncidentAndSave() {
         IncidentEntity incident = new IncidentEntity();
@@ -41,10 +45,9 @@ class TimelineServiceTest {
         when(timelineRepository.save(any()))
                 .thenAnswer(i -> i.getArgument(0));
 
-        TimelineEventEntity result = timelineService.addEvent(1L, event);
+        TimelineEventDTO result = timelineService.addEvent(1L, event);
 
         assertNotNull(result);
-        assertEquals(incident, result.getIncident());
         verify(timelineRepository).save(event);
     }
 

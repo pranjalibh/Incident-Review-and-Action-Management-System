@@ -1,6 +1,7 @@
 package com.tus.incidentmanagement.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tus.incidentmanagement.dto.ActionItemDTO;
 import com.tus.incidentmanagement.entity.ActionItemEntity;
 import com.tus.incidentmanagement.model.ActionRequest;
 import com.tus.incidentmanagement.service.ActionItemService;
@@ -37,7 +38,7 @@ class ActionControllerTest {
     void createAction_shouldReturnAction() throws Exception {
 
         ActionRequest request = buildActionRequest();
-        ActionItemEntity action = buildAction();
+        ActionItemDTO action = buildAction();
 
         when(actionService.createAction(any(), any(), any(), any()))
                 .thenReturn(action);
@@ -63,7 +64,7 @@ class ActionControllerTest {
     @Test
     void completeAction_shouldReturnUpdatedAction() throws Exception {
 
-        ActionItemEntity action = buildAction();
+        ActionItemDTO action = buildAction();
 
         when(actionService.completeAction(1L))
                 .thenReturn(action);
@@ -84,8 +85,8 @@ class ActionControllerTest {
         return req;
     }
 
-    private ActionItemEntity buildAction() {
-        ActionItemEntity action = new ActionItemEntity();
+    private ActionItemDTO buildAction() {
+        ActionItemDTO action = new ActionItemDTO();
         action.setDescription("fix issue");
         return action;
     }

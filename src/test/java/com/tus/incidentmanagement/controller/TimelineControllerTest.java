@@ -1,6 +1,7 @@
 package com.tus.incidentmanagement.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tus.incidentmanagement.dto.TimelineEventDTO;
 import com.tus.incidentmanagement.entity.TimelineEventEntity;
 import com.tus.incidentmanagement.service.TimelineService;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ class TimelineControllerTest {
     @Test
     void addTimelineEvent_shouldReturnEvent() throws Exception {
 
-        TimelineEventEntity event = buildEvent();
+        TimelineEventDTO event = buildEventDto();
 
         when(timelineService.addEvent(any(), any()))
                 .thenReturn(event);
@@ -51,7 +52,7 @@ class TimelineControllerTest {
     void getTimeline_shouldReturnList() throws Exception {
 
         when(timelineService.getTimeline(1L))
-                .thenReturn(Arrays.asList(buildEvent(), buildEvent()));
+                .thenReturn(Arrays.asList(buildEventDto(), buildEventDto()));
 
         mockMvc.perform(get("/api/incidents/1/timeline"))
                 .andExpect(status().isOk())
@@ -59,9 +60,8 @@ class TimelineControllerTest {
     }
 
     // helper
-
-    private TimelineEventEntity buildEvent() {
-        TimelineEventEntity event = new TimelineEventEntity();
+    private TimelineEventDTO buildEventDto() {
+        TimelineEventDTO event = new TimelineEventDTO();
         event.setDescription("event happened");
         return event;
     }
