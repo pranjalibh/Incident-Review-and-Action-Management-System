@@ -1,8 +1,9 @@
 package com.tus.incidentmanagement.service;
 
+import com.tus.incidentmanagement.dto.IncidentDTO;
 import com.tus.incidentmanagement.entity.IncidentEntity;
-import com.tus.incidentmanagement.repository.ActionItemRepository;
-import com.tus.incidentmanagement.repository.IncidentRepository;
+import com.tus.incidentmanagement.dao.ActionItemRepository;
+import com.tus.incidentmanagement.dao.IncidentRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,7 +45,7 @@ class IncidentServiceTest {
         when(incidentRepository.save(any()))
                 .thenReturn(incident);
 
-        IncidentEntity saved = incidentService.createIncident(incident);
+        IncidentDTO saved = incidentService.createIncident(incident);
 
         assertEquals("OPEN", incident.getStatus());
         verify(incidentRepository).save(incident);
@@ -62,7 +63,7 @@ class IncidentServiceTest {
         when(incidentRepository.save(any()))
                 .thenReturn(incident);
 
-        IncidentEntity updated = incidentService.toggleBlameless(1L);
+        IncidentDTO updated = incidentService.toggleBlameless(1L);
 
         assertTrue(updated.isBlameless());
         verify(incidentRepository).save(incident);
@@ -104,7 +105,7 @@ class IncidentServiceTest {
         when(incidentRepository.save(any()))
                 .thenReturn(incident);
 
-        IncidentEntity result = incidentService.closeIncident(1L);
+        IncidentDTO result = incidentService.closeIncident(1L);
 
         assertEquals("CLOSED", result.getStatus());
         verify(incidentRepository).save(incident);

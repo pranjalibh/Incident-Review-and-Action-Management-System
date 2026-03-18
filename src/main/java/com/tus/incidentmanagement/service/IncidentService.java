@@ -1,46 +1,51 @@
 package com.tus.incidentmanagement.service;
 
 import com.tus.incidentmanagement.entity.IncidentEntity;
-import com.tus.incidentmanagement.repository.ActionItemRepository;
-import com.tus.incidentmanagement.repository.IncidentRepository;
+import com.tus.incidentmanagement.dao.ActionItemRepository;
+import com.tus.incidentmanagement.dao.IncidentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.tus.incidentmanagement.dto.IncidentDTO;
+
 
 import java.util.List;
 
 @Service
 public class IncidentService {
 
-    private final IncidentRepository incidentRepository;
-    private final ActionItemRepository actionItemRepository;
+    @Autowired
+    private  IncidentRepository incidentRepository;
+    @Autowired
+    private  ActionItemRepository actionItemRepository;
+    @Autowired
+    private AuthService authService;
 
-    public IncidentService(IncidentRepository incidentRepository,
-                           ActionItemRepository actionItemRepository) {
-        this.incidentRepository = incidentRepository;
-        this.actionItemRepository = actionItemRepository;
+
+
+    public List<IncidentDTO> getAllIncidents() {
+        List<IncidentEntity> listOfIncidents= (List<IncidentEntity>) incidentRepository.findAll();
+        return listOfIncidents.stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
-
-    public List<IncidentEntity> getAllIncidents() {
-        return (List<IncidentEntity>) incidentRepository.findAll();
-    }
-
-    public IncidentEntity createIncident(IncidentEntity incident) {
+    public IncidentDTO createIncident(IncidentEntity incident) {
         incident.setStatus("OPEN"); // required by user story
-        return incidentRepository.save(incident);
+        return mapToDTO(incidentRepository.save(incident));
     }
-    public IncidentEntity toggleBlameless(Long id) {
+    public IncidentDTO toggleBlameless(Long id) {
 
         IncidentEntity incident = getIncidentById(id);
         incident.setBlameless(!incident.isBlameless());
 
-        return incidentRepository.save(incident);
+        return mapToDTO(incidentRepository.save(incident));
     }
     public IncidentEntity getIncidentById(Long id) {
 
         return incidentRepository.findIncidentById(id)
                 .orElseThrow(() -> new RuntimeException("Incident not found"));
     }
-    public IncidentEntity closeIncident(Long id) {
+    public IncidentDTO closeIncident(Long id) {
 
         IncidentEntity incident = getIncidentById(id);
 
@@ -52,6 +57,28 @@ public class IncidentService {
 
         incident.setStatus("CLOSED");
 
-        return incidentRepository.save(incident);
+        return mapToDTO(incidentRepository.save(incident));
+    }
+
+    public IncidentDTO mapToDTO(IncidentEntity entity) {
+
+        IncidentDTO dto = new IncidentDTO();
+        if(entity != null) {
+            dto.setId(entity.getId());
+            dto.setTitle(entity.getTitle());
+            dto.setDescription(entity.getDescription());
+            dto.setSeverity(entity.getSeverity());
+            dto.setStatus(entity.getStatus());
+            dto.setBlameless(entity.isBlameless());
+
+            if (entity.getCreatedAt() != null) {
+                dto.setCreatedAt(entity.getCreatedAt());
+            }
+
+            if (entity.getCreatedBy() != null) {
+                dto.setCreatedBy(authService.mapToDTO(entity.getCreatedBy()));
+            }
+        }
+        return dto;
     }
 }

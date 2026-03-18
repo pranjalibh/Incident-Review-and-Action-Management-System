@@ -26,7 +26,7 @@ public class IncidentEntity {
     @Column(nullable = false)
     private boolean blameless = false;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne

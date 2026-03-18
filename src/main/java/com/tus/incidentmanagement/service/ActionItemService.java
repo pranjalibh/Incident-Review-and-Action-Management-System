@@ -1,12 +1,14 @@
 package com.tus.incidentmanagement.service;
 
 
+import com.tus.incidentmanagement.dto.ActionItemDTO;
 import com.tus.incidentmanagement.entity.ActionItemEntity;
 import com.tus.incidentmanagement.entity.IncidentEntity;
 import com.tus.incidentmanagement.entity.UserEntity;
-import com.tus.incidentmanagement.repository.ActionItemRepository;
-import com.tus.incidentmanagement.repository.IncidentRepository;
-import com.tus.incidentmanagement.repository.UserRepository;
+import com.tus.incidentmanagement.dao.ActionItemRepository;
+import com.tus.incidentmanagement.dao.IncidentRepository;
+import com.tus.incidentmanagement.dao.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +18,17 @@ import java.util.List;
 @Service
 public class ActionItemService {
 
-    private final ActionItemRepository actionItemRepository;
-    private final IncidentRepository incidentRepository;
-    private final UserRepository userRepository;
+    @Autowired
+    private  ActionItemRepository actionItemRepository;
+    @Autowired
+    private  IncidentRepository incidentRepository;
+    @Autowired
+    private  UserRepository userRepository;
+    @Autowired
+    private  IncidentService incidentService;
+    @Autowired
+    private AuthService authService;
 
-    public ActionItemService(ActionItemRepository actionItemRepository, IncidentRepository incidentRepository, UserRepository userRepository) {
-        this.actionItemRepository = actionItemRepository;
-        this.incidentRepository = incidentRepository;
-        this.userRepository = userRepository;
-    }
 
     private boolean validateSla(IncidentEntity incident, LocalDateTime dueDate) {
 
@@ -48,7 +52,7 @@ public class ActionItemService {
 
     }
 
-    public ActionItemEntity createAction(Long incidentId,
+    public ActionItemDTO createAction(Long incidentId,
                                          String description,
                                          String username,
                                          LocalDateTime dueDate) {
@@ -68,20 +72,52 @@ public class ActionItemService {
         action.setDueDate(dueDate);
         action.setIncident(incident);
         action.setAssignedTo(user);
-
-        return actionItemRepository.save(action);
+        ActionItemEntity saved = actionItemRepository.save(action);
+        return mapToDTO(saved);
     }
 
-    public List<ActionItemEntity> getActions(Long id) {
-        return (List<ActionItemEntity>) actionItemRepository.findActionsByIncidentId(id);
+    public List<ActionItemDTO> getActions(Long id) {
+        return actionItemRepository.findActionsByIncidentId(id)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+
     }
     @Transactional
-    public ActionItemEntity completeAction(Long actionId) {
+    public ActionItemDTO completeAction(Long actionId) {
         actionItemRepository.completeAction(actionId);
-        return actionItemRepository.findActionById(actionId);
+        ActionItemEntity entity = actionItemRepository.findActionById(actionId);
+        return mapToDTO(entity);
     }
 
-    public List<ActionItemEntity> getMyActions(String username) {
-        return actionItemRepository.findByAssignedUsername(username);
+    public List<ActionItemDTO> getMyActions(String username) {
+        return actionItemRepository.findByAssignedUsername(username)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+
+    public ActionItemDTO mapToDTO(ActionItemEntity entity) {
+
+        ActionItemDTO dto = new ActionItemDTO();
+        if(entity != null) {
+            dto.setId(entity.getId());
+            dto.setDescription(entity.getDescription());
+            dto.setCompleted(entity.isCompleted());
+
+            if (entity.getDueDate() != null) {
+                dto.setDueDate(entity.getDueDate().toString());
+            }
+
+            if (entity.getAssignedTo() != null) {
+                dto.setAssignedTo(authService.mapToDTO(entity.getAssignedTo()));
+            }
+
+            if (entity.getIncident() != null) {
+                dto.setIncident(incidentService.mapToDTO(entity.getIncident()));
+            }
+        }
+
+        return dto;
     }
 }

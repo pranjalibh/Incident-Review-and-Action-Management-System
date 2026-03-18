@@ -1,11 +1,14 @@
 package com.tus.incidentmanagement.service;
 
+import com.tus.incidentmanagement.dto.ActionItemDTO;
+import com.tus.incidentmanagement.dto.IncidentDTO;
+import com.tus.incidentmanagement.dto.UserDTO;
 import com.tus.incidentmanagement.entity.ActionItemEntity;
 import com.tus.incidentmanagement.entity.IncidentEntity;
 import com.tus.incidentmanagement.entity.UserEntity;
-import com.tus.incidentmanagement.repository.ActionItemRepository;
-import com.tus.incidentmanagement.repository.IncidentRepository;
-import com.tus.incidentmanagement.repository.UserRepository;
+import com.tus.incidentmanagement.dao.ActionItemRepository;
+import com.tus.incidentmanagement.dao.IncidentRepository;
+import com.tus.incidentmanagement.dao.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,6 +37,12 @@ class ActionItemServiceTest {
     @InjectMocks
     private ActionItemService actionItemService;
 
+    @Mock
+    private IncidentService incidentService;
+
+    @Mock
+    private AuthService authService;
+
     @Test
     void createAction_shouldWork_whenValidInput() {
         IncidentEntity incident = new IncidentEntity();
@@ -52,7 +61,16 @@ class ActionItemServiceTest {
         when(actionItemRepository.save(any()))
                 .thenAnswer(i -> i.getArgument(0));
 
-        ActionItemEntity result = actionItemService.createAction(
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername("john");
+
+        when(authService.mapToDTO(any()))
+                .thenReturn(userDTO);
+
+        when(incidentService.mapToDTO(any()))
+                .thenReturn(new IncidentDTO());
+
+        ActionItemDTO result = actionItemService.createAction(
                 1L,
                 "fix issue",
                 "john",
@@ -61,7 +79,7 @@ class ActionItemServiceTest {
 
         assertNotNull(result);
         assertEquals("fix issue", result.getDescription());
-        assertEquals(user, result.getAssignedTo());
+        assertEquals(userDTO, result.getAssignedTo());
     }
 
     @Test
@@ -123,7 +141,7 @@ class ActionItemServiceTest {
         when(actionItemRepository.findActionById(1L))
                 .thenReturn(action);
 
-        ActionItemEntity result = actionItemService.completeAction(1L);
+        ActionItemDTO result = actionItemService.completeAction(1L);
 
         assertNotNull(result);
         verify(actionItemRepository).completeAction(1L);

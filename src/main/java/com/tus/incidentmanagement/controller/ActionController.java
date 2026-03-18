@@ -1,7 +1,10 @@
 package com.tus.incidentmanagement.controller;
 
+import com.tus.incidentmanagement.dto.ActionItemDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import com.tus.incidentmanagement.entity.ActionItemEntity;
 import com.tus.incidentmanagement.model.ActionRequest;
 import com.tus.incidentmanagement.service.ActionItemService;
 import org.springframework.http.ResponseEntity;
@@ -12,20 +15,23 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/incidents")
+@Tag(name = "Actions", description = "Manage action items for incidents")
 public class ActionController {
 
-    private final ActionItemService actionService;
+    @Autowired
+    private ActionItemService actionService;
 
-    public ActionController(ActionItemService actionService) {
+   /* public ActionController(ActionItemService actionService) {
         this.actionService = actionService;
-    }
+    }*/
 
+    @Operation(summary = "Create an action item for an incident")
     @PostMapping("/{id}/actions")
-    public ResponseEntity<ActionItemEntity> createAction(
+    public ResponseEntity<ActionItemDTO> createAction(
             @PathVariable Long id,
             @RequestBody ActionRequest request) {
 
-        ActionItemEntity action =
+        ActionItemDTO action =
                 actionService.createAction(
                         id,
                         request.getDescription(),
@@ -35,21 +41,24 @@ public class ActionController {
         return ResponseEntity.ok(action);
     }
 
+    @Operation(summary = "Get all action items for an incident")
     @GetMapping("/{id}/actions")
-    public List<ActionItemEntity> getActions(@PathVariable Long id) {
+    public List<ActionItemDTO> getActions(@PathVariable Long id) {
         return actionService.getActions(id);
     }
 
+    @Operation(summary = "Mark an action item as complete")
     @PutMapping("/actions/{actionId}/complete")
-    public ResponseEntity<ActionItemEntity> completeAction(@PathVariable Long actionId) {
+    public ResponseEntity<ActionItemDTO> completeAction(@PathVariable Long actionId) {
 
-        ActionItemEntity action = actionService.completeAction(actionId);
+        ActionItemDTO action = actionService.completeAction(actionId);
 
         return ResponseEntity.ok(action);
     }
 
+    @Operation(summary = "Get actions assigned to the logged-in user")
     @GetMapping("/my/actions")
-    public List<ActionItemEntity> getMyActions() {
+    public List<ActionItemDTO> getMyActions() {
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

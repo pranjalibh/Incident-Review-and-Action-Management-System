@@ -14,7 +14,7 @@ public class ActionItemEntity {
 
     private String description;
 
-    @Column(name = "due_date")
+    @Column(name = "due_date" , columnDefinition = "TIMESTAMP")
     private LocalDateTime dueDate;
 
     private boolean completed;

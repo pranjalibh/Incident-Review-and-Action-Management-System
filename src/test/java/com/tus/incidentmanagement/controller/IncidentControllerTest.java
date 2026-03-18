@@ -1,10 +1,11 @@
 package com.tus.incidentmanagement.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tus.incidentmanagement.dto.IncidentDTO;
 import com.tus.incidentmanagement.entity.IncidentEntity;
 import com.tus.incidentmanagement.entity.UserEntity;
 import com.tus.incidentmanagement.model.Incident;
-import com.tus.incidentmanagement.repository.UserRepository;
+import com.tus.incidentmanagement.dao.UserRepository;
 import com.tus.incidentmanagement.service.IncidentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ class IncidentControllerTest {
         when(incidentService.getAllIncidents())
                 .thenReturn(Arrays.asList(buildIncident(), buildIncident()));
 
-        mockMvc.perform(get("/api/admin/incidents"))
+        mockMvc.perform(get("/api/incidents"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
     }
@@ -57,7 +58,7 @@ class IncidentControllerTest {
 
         Incident request = buildIncidentRequest();
         UserEntity user = buildUser("john", "MANAGER");
-        IncidentEntity saved = buildIncident();
+        IncidentDTO saved = buildIncident();
 
         when(userRepository.findByUsername("john"))
                 .thenReturn(Optional.of(user));
@@ -69,7 +70,7 @@ class IncidentControllerTest {
                 new UsernamePasswordAuthenticationToken("john", null)
         );
 
-        mockMvc.perform(post("/api/admin/incidents")
+        mockMvc.perform(post("/api/incidents")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -80,7 +81,7 @@ class IncidentControllerTest {
     void toggleBlameless_shouldWork_forManager() throws Exception {
 
         UserEntity user = buildUser("john", "MANAGER");
-        IncidentEntity incident = buildIncident();
+        IncidentDTO incident = buildIncident();
 
         when(userRepository.findByUsername("john"))
                 .thenReturn(Optional.of(user));
@@ -92,7 +93,7 @@ class IncidentControllerTest {
                 new UsernamePasswordAuthenticationToken("john", null)
         );
 
-        mockMvc.perform(patch("/api/admin/incidents/1/blameless")
+        mockMvc.perform(patch("/api/incidents/1/blameless")
                         .with(user("john")))
                 .andExpect(status().isOk());
     }
@@ -109,17 +110,17 @@ class IncidentControllerTest {
                 new UsernamePasswordAuthenticationToken("john", null)
         );
 
-        mockMvc.perform(patch("/api/admin/incidents/1/blameless"))
+        mockMvc.perform(patch("/api/incidents/1/blameless"))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void getIncident_shouldReturnIncident() throws Exception {
 
-        when(incidentService.getIncidentById(1L))
+        when(incidentService.mapToDTO(incidentService.getIncidentById(1L)))
                 .thenReturn(buildIncident());
 
-        mockMvc.perform(get("/api/admin/incidents/1"))
+        mockMvc.perform(get("/api/incidents/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Test Incident"));
     }
@@ -128,7 +129,7 @@ class IncidentControllerTest {
     void closeIncident_shouldWork_forReviewer() throws Exception {
 
         UserEntity user = buildUser("john", "REVIEWER");
-        IncidentEntity incident = buildIncident();
+        IncidentDTO incident = buildIncident();
 
         when(userRepository.findByUsername("john"))
                 .thenReturn(Optional.of(user));
@@ -140,7 +141,7 @@ class IncidentControllerTest {
                 new UsernamePasswordAuthenticationToken("john", null)
         );
 
-        mockMvc.perform(patch("/api/admin/incidents/1/close"))
+        mockMvc.perform(patch("/api/incidents/1/close"))
                 .andExpect(status().isOk());
     }
 
@@ -152,7 +153,7 @@ class IncidentControllerTest {
         when(userRepository.findByUsername("john"))
                 .thenReturn(Optional.of(user));
 
-        mockMvc.perform(patch("/api/admin/incidents/1/close")
+        mockMvc.perform(patch("/api/incidents/1/close")
                         .with(user("john")))
                 .andExpect(status().isBadRequest());
     }
@@ -172,8 +173,8 @@ class IncidentControllerTest {
         );
     }
 
-    private IncidentEntity buildIncident() {
-        IncidentEntity incident = new IncidentEntity();
+    private IncidentDTO buildIncident() {
+        IncidentDTO incident = new IncidentDTO();
         incident.setTitle("Test Incident");
         return incident;
     }

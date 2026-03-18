@@ -15,7 +15,7 @@ $(document).ready(function () {
 
         $.ajax({
 
-            url: "/api/admin/incidents",
+            url: "/api/incidents",
             type: "GET",
 
             headers: {

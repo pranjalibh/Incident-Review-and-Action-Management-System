@@ -39,6 +39,12 @@ $(document).ready(function () {
                             <td>${user.username}</td>
                             <td>${user.role}</td>
                             <td>${user.createdAt}</td>
+                            <td>
+                               <button class="btn btn-danger btn-sm delete-user-btn"
+                               data-id="${user.id}">
+                               Delete
+                               </button>
+                            </td>
                         </tr>
                     `;
                 });
@@ -54,6 +60,17 @@ $(document).ready(function () {
             }
         });
     }
+
+    $(document).on("click", ".delete-user-btn", function () {
+
+        const id = $(this).data("id");
+
+        if (!confirm("Are you sure you want to delete this user?")) {
+            return;
+        }
+
+        deleteUser(id);
+    });
 
     function createUser() {
 
@@ -96,6 +113,33 @@ $(document).ready(function () {
 
             error: function () {
                 showMessage("Error creating user", "danger");
+            }
+        });
+    }
+
+    function deleteUser(id) {
+
+        $.ajax({
+            url: "/auth/users/" + id,
+            type: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+
+            success: function () {
+                showMessage("User deleted successfully", "success");
+                loadUsers();
+            },
+
+            error: function (xhr) {
+
+                if (xhr.status === 403) {
+                    showMessage("Only admins can delete users", "danger");
+                } else if (xhr.status === 404) {
+                    showMessage("User not found", "warning");
+                } else {
+                    showMessage("Error deleting user", "danger");
+                }
             }
         });
     }

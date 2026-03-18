@@ -16,7 +16,7 @@ public class TimelineEventEntity {
     @Column(nullable = false)
     private String description;
 
-    @Column(name = "event_time", nullable = false)
+    @Column(name = "event_time", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime eventTime;
 
     @ManyToOne

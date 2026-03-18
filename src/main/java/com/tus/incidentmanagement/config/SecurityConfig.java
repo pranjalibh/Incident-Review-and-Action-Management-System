@@ -40,7 +40,10 @@ public class SecurityConfig {
                                 "/manager.html",
                                 "/incident-details.html",
                                 "/reviewer.html",
-                                "/user.html"
+                                "/user.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html"
                         ).permitAll()
 
                         // ROLE-BASED ACCESS

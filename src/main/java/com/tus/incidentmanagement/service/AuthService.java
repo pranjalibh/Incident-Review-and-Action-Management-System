@@ -2,9 +2,10 @@ package com.tus.incidentmanagement.service;
 
 import com.tus.incidentmanagement.config.JwtService;
 import com.tus.incidentmanagement.dto.LoginResponseDTO;
+import com.tus.incidentmanagement.dto.UserDTO;
 import com.tus.incidentmanagement.entity.UserEntity;
 import com.tus.incidentmanagement.exception.InvalidCredentialsException;
-import com.tus.incidentmanagement.repository.UserRepository;
+import com.tus.incidentmanagement.dao.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,14 +50,38 @@ public class AuthService {
         return new LoginResponseDTO(token, user.getRole());
     }
 
-    public List<UserEntity> getUsers() {
-       return userRepository.findAll();
+    public List<UserDTO> getUsers() {
+
+       List<UserEntity> listOfUsers= userRepository.findAll();
+       return listOfUsers.stream().map(this::mapToDTO)
+                .toList();
     }
 
-    public UserEntity createUser(UserEntity user) {
+    public UserDTO createUser(UserEntity user) {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return mapToDTO(userRepository.save(user));
+    }
 
-        return userRepository.save(user);
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found");
+        }
+        userRepository.deleteById(id);
+    }
+
+    public UserDTO mapToDTO(UserEntity user) {
+        UserDTO dto = new UserDTO();
+        if(user != null) {
+
+            dto.setId(user.getId());
+            dto.setUsername(user.getUsername());
+            dto.setRole(user.getRole());
+
+            if (user.getCreatedAt() != null) {
+                dto.setCreatedAt(user.getCreatedAt().toString());
+            }
+        }
+        return dto;
     }
 }
