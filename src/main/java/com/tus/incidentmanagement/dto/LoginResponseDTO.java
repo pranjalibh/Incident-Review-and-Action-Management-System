@@ -1,5 +1,10 @@
 package com.tus.incidentmanagement.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class LoginResponseDTO {
 
     private String token;
@@ -10,6 +15,4 @@ public class LoginResponseDTO {
         this.role = role;
     }
 
-    public String getToken() { return token; }
-    public String getRole() { return role; }
 }

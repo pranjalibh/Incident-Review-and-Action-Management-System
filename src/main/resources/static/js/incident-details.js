@@ -40,7 +40,7 @@ $(document).ready(function () {
 
     function loadIncident() {
         $.ajax({
-            url: "/api/admin/incidents/" + incidentId,
+            url: "/api/incidents/" + incidentId,
             type: "GET",
             headers: { "Authorization": "Bearer " + token },
 
@@ -207,7 +207,7 @@ $(document).ready(function () {
 
     function closeIncident() {
         $.ajax({
-            url: "/api/admin/incidents/" + incidentId + "/close",
+            url: "/api/incidents/" + incidentId + "/close",
             type: "PATCH",
             headers: { "Authorization": "Bearer " + token },
 

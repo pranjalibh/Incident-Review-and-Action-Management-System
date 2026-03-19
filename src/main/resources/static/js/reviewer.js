@@ -4,6 +4,10 @@ $(document).ready(function () {
 
     const token = getToken();
 
+    let allIncidents = [];
+    let currentPage = 1;
+    const rowsPerPage = 5;
+
     loadIncidents();
 
     // Logout
@@ -11,11 +15,22 @@ $(document).ready(function () {
         logout();
     });
 
+    // Pagination click
+    $(document).on("click", ".page-link", function (e) {
+        e.preventDefault();
+
+        const page = parseInt($(this).text());
+        currentPage = page;
+
+        renderTable();
+        setupPagination();
+    });
+
     function loadIncidents() {
 
         $.ajax({
 
-            url: "/api/admin/incidents",
+            url: "/api/incidents",
             type: "GET",
 
             headers: {
@@ -24,30 +39,11 @@ $(document).ready(function () {
 
             success: function (data) {
 
-                let rows = "";
+                allIncidents = data;
+                currentPage = 1;
 
-                data.forEach(function (incident) {
-
-                    const blamelessLabel = incident.blameless
-                        ? `<span class="badge bg-success">ON</span>`
-                        : `<span class="badge bg-secondary">OFF</span>`;
-
-                    rows += `
-                        <tr>
-                            <td>${incident.id}</td>
-                            <td>
-                                <a class="incident-link" href="/incident-details.html?id=${incident.id}">
-                                    ${incident.title}
-                                </a>
-                            </td>
-                            <td>${incident.severity}</td>
-                            <td>${incident.status}</td>
-                            <td>${blamelessLabel}</td>
-                        </tr>
-                    `;
-                });
-
-                $("#incidentTableBody").html(rows);
+                renderTable();
+                setupPagination();
             },
 
             error: function (xhr) {
@@ -60,9 +56,57 @@ $(document).ready(function () {
         });
     }
 
-    function showMessage(message) {
+    function renderTable() {
 
-        alert(message); // keeping simple here (no modal needed for this page)
+        let rows = "";
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        const paginatedItems = allIncidents.slice(start, end);
+
+        paginatedItems.forEach(function (incident) {
+
+            const blamelessLabel = incident.blameless
+                ? `<span class="badge bg-success">ON</span>`
+                : `<span class="badge bg-secondary">OFF</span>`;
+
+            rows += `
+                <tr>
+                    <td>${incident.id}</td>
+                    <td>
+                        <a class="incident-link" href="/incident-details.html?id=${incident.id}">
+                            ${incident.title}
+                        </a>
+                    </td>
+                    <td>${incident.severity}</td>
+                    <td>${incident.status}</td>
+                    <td>${blamelessLabel}</td>
+                </tr>
+            `;
+        });
+
+        $("#incidentTableBody").html(rows);
+    }
+
+    function setupPagination() {
+
+        const pageCount = Math.ceil(allIncidents.length / rowsPerPage);
+        let buttons = "";
+
+        for (let i = 1; i <= pageCount; i++) {
+            buttons += `
+                <li class="page-item ${i === currentPage ? "active" : ""}">
+                    <a class="page-link" href="#">${i}</a>
+                </li>
+            `;
+        }
+
+        $("#pagination").html(buttons);
+    }
+
+    function showMessage(message) {
+        alert(message);
     }
 
 });

@@ -20,7 +20,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String role;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
 

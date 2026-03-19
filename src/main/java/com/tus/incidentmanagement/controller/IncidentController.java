@@ -1,11 +1,15 @@
 package com.tus.incidentmanagement.controller;
 
+import com.tus.incidentmanagement.dto.IncidentDTO;
 import com.tus.incidentmanagement.entity.IncidentEntity;
 import com.tus.incidentmanagement.entity.UserEntity;
 import com.tus.incidentmanagement.model.Incident;
-import com.tus.incidentmanagement.repository.UserRepository;
+import com.tus.incidentmanagement.dao.UserRepository;
 import com.tus.incidentmanagement.service.IncidentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,23 +18,29 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/incidents")
+@RequestMapping("/api/incidents")
+@Tag(name = "Incidents", description = "Manage incidents")
 public class IncidentController {
 
-    private final IncidentService incidentService;
-    private final UserRepository userRepository;
+    @Autowired
+    private  IncidentService incidentService;
+    @Autowired
+    private  UserRepository userRepository;
 
-    public IncidentController(IncidentService incidentService, UserRepository userRepository) {
+    /*public IncidentController(IncidentService incidentService, UserRepository userRepository) {
         this.incidentService = incidentService;
         this.userRepository = userRepository;
-    }
+    }*/
 
+    @Operation(summary = "Get all incidents")
     @GetMapping
-    public List<IncidentEntity> getAllIncidents() {
+    public List<IncidentDTO> getAllIncidents() {
         return incidentService.getAllIncidents();
     }
+
+    @Operation(summary = "Create a new incident")
     @PostMapping
-    public ResponseEntity<IncidentEntity> createIncident(@Valid @RequestBody Incident request) {
+    public ResponseEntity<IncidentDTO> createIncident(@Valid @RequestBody Incident request) {
 
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
@@ -47,12 +57,14 @@ public class IncidentController {
         incident.setCreatedBy(user);
 
 
-        IncidentEntity savedIncident = incidentService.createIncident(incident);
+        IncidentDTO savedIncident = incidentService.createIncident(incident);
 
         return ResponseEntity.ok(savedIncident);
     }
+
+    @Operation(summary = "Toggle blameless flag (Manager only)")
     @PatchMapping("/{id}/blameless")
-    public ResponseEntity<IncidentEntity> toggleBlameless(@PathVariable Long id) {
+    public ResponseEntity<IncidentDTO> toggleBlameless(@PathVariable Long id) {
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
 
@@ -63,18 +75,22 @@ public class IncidentController {
             return ResponseEntity.badRequest().build();
         }
 
-        IncidentEntity incident = incidentService.toggleBlameless(id);
+        IncidentDTO incident = incidentService.toggleBlameless(id);
 
         return ResponseEntity.ok(incident);
     }
+
+    @Operation(summary = "Get incident by ID")
     @GetMapping("/{id}")
-    public ResponseEntity<IncidentEntity> getIncident(@PathVariable Long id) {
+    public ResponseEntity<IncidentDTO> getIncident(@PathVariable Long id) {
 
         IncidentEntity incident = incidentService.getIncidentById(id);
+        IncidentDTO dto = incidentService.mapToDTO(incident);
 
-        return ResponseEntity.ok(incident);
+        return ResponseEntity.ok(dto);
     }
 
+    @Operation(summary = "Close an incident (Reviewer only)")
     @PatchMapping("/{id}/close")
     public ResponseEntity<?> closeIncident(@PathVariable Long id) {
 
@@ -92,7 +108,7 @@ public class IncidentController {
                 return ResponseEntity.badRequest().body("You are not a reviewer");
             }
 
-            IncidentEntity incident = incidentService.closeIncident(id);
+            IncidentDTO incident = incidentService.closeIncident(id);
 
             return ResponseEntity.ok(incident);
 

@@ -1,0 +1,35 @@
+Feature: Action item endpoints
+
+Background:
+  Given url baseUrl
+
+  # authenticate user (FIXED USERNAME)
+  Given path '/auth/login'
+  And request { username: 'manager1', password: 'admin123' }
+  And header Content-Type = 'application/json'
+  When method post
+  Then status 200
+  And def token = response.token
+
+Scenario: Create an action item for incident
+  Given path '/api/incidents/1/actions'
+  And header Authorization = 'Bearer ' + token
+  And request { description: 'Restart server', assignedTo: 'manager1', dueDate: '2026-03-20T10:00:00' }
+  When method post
+  Then status 200
+  And match response.description == 'Restart server'
+  And match response.completed == false
+
+Scenario: Get actions for a specific incident
+  Given path '/api/incidents/1/actions'
+  And header Authorization = 'Bearer ' + token
+  When method get
+  Then status 200
+  And match response[0].description == '#string'
+
+Scenario: Mark action as complete
+  Given path '/api/incidents/actions/1/complete'
+  And header Authorization = 'Bearer ' + token
+  When method put
+  Then status 200
+  And match response.completed == true
