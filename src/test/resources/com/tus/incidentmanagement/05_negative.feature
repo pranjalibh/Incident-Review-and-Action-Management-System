@@ -8,7 +8,7 @@ Scenario: Login with invalid credentials
   And request { username: 'manager1', password: 'admin234' }
   And header Content-Type = 'application/json'
   When method post
-  Then status 400
+  Then status 401
 
 Scenario: Try accessing API without token
   Given path '/api/incidents'
