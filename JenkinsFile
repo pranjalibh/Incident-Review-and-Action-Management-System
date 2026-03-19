@@ -27,6 +27,12 @@ pipeline {
       }
     }
 
+     stage('Setup Chrome') {
+         steps {
+            bat 'where chrome || choco install googlechrome -y'
+         }
+     }
+
     stage('Unit Tests') {
       steps {
         bat 'mvn test -DskipUITests=true'
