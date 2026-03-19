@@ -7,21 +7,26 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)@ActiveProfiles("data") // use your working profile
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("data") // use your working profile
+
 class ReporterSeleniumTest {
     @LocalServerPort
     int port;
 
     private WebDriver driver;
     private WebDriverWait wait;
+
 
     @BeforeEach
     void setup() {
@@ -38,8 +43,18 @@ class ReporterSeleniumTest {
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @AfterEach
     void tearDown() {
+
+        // Clean test data only
+        jdbcTemplate.update(
+                "DELETE FROM incidents WHERE title LIKE ?",
+                "[TEST]%"
+        );
+
         if (driver != null) {
             driver.quit();
         }
@@ -83,8 +98,7 @@ class ReporterSeleniumTest {
 
         // fill form
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("title")))
-                .sendKeys("Selenium Incident");
-
+                .sendKeys("[TEST] Selenium Incident");
         driver.findElement(By.id("description"))
                 .sendKeys("Created by Selenium test");
 
@@ -102,4 +116,5 @@ class ReporterSeleniumTest {
         assertTrue(message.getText().contains("Incident"),
                 "Incident creation failed");
     }
+
 }
