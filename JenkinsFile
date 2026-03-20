@@ -64,7 +64,7 @@ pipeline {
 
         stage('API Tests (Karate)') {
             steps {
-                mvn test -Dtest=KarateRunnerTestIT
+                bat 'mvn test -Dtest=KarateRunnerTestIT'
             }
         }
 
