@@ -21,7 +21,8 @@ pipeline {
     environment {
         GITHUB_TOKEN = credentials('github-token')
         SONAR_TOKEN = credentials('sonar-token')
-        CHROME_BIN = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+        CHROME_BIN = 'C:\\Users\\pranj\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe'
+
     }
 
     stages {
