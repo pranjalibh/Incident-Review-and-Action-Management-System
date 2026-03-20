@@ -52,14 +52,13 @@ pipeline {
         }
 
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('LocalSonar') {
-                    bat 'mvn sonar:sonar -Dsonar.projectKey=incident-management'
-                }
-            }
-        }
-
+       stage('SonarQube Analysis') {
+           steps {
+               withSonarQubeEnv('LocalSonar') {
+                   bat 'mvn sonar:sonar -Dsonar.projectKey=incident-management'
+               }
+           }
+       }
 
         stage('Quality Gate') {
             steps {
