@@ -41,7 +41,7 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                bat 'mvn test -Dtest=!*SeleniumTest'
+               bat 'mvn test -Dtest=!*SeleniumTest,!*KarateRunnerTestIT'
             }
         }
 
