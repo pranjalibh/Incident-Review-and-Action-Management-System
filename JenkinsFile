@@ -20,6 +20,7 @@ pipeline {
 
     environment {
         GITHUB_TOKEN = credentials('github-token')
+        SONAR_TOKEN = credentials('sonar-token')
         CHROME_BIN = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
     }
 
@@ -57,7 +58,8 @@ pipeline {
                     bat '''
                         mvn sonar:sonar ^
                         -Dsonar.projectKey=incident-management ^
-                        -Dsonar.host.url=http://localhost:9000
+                        -Dsonar.host.url=http://localhost:9000 ^
+                        -Dsonar.token=%SONAR_TOKEN%
                     '''
                 }
             }
