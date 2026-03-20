@@ -1,65 +1,122 @@
 pipeline {
-  agent any
+    agent any
 
-  triggers {
-    pollSCM('H/3 * * * *') // every 3 minutes
-  }
-
-  environment {
-    GITHUB_TOKEN = credentials('github-token')
-  }
-
-  tools {
-    maven 'Maven_3'
-  }
-
-  stages {
-
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+    tools {
+        jdk 'JDK-21'
+        maven 'Maven_3'
     }
 
-    stage('Build') {
-      steps {
-        bat 'mvn clean compile'
-      }
+    triggers {
+        pollSCM('H/3 * * * *')
     }
 
-    stage('Unit Tests') {
-      steps {
-        bat 'mvn test -DskipUITests=true'
-      }
+    parameters {
+        booleanParam(
+            name: 'RUN_UI_TESTS',
+            defaultValue: false,
+            description: 'Run Selenium UI tests'
+        )
     }
 
-    stage('API Tests') {
-      steps {
-        bat 'mvn verify -DskipUnitTests=true -DskipUITests=true'
-      }
+    environment {
+        GITHUB_TOKEN = credentials('github-token')
+        SONAR_TOKEN = credentials('sonar-token')
+        CHROME_BIN = 'C:\\Users\\pranj\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe'
+
     }
 
+    stages {
 
-    stage('Secure Step') {
-      steps {
-        bat 'echo "Token injected securely"'
-      }
-    }
-  }
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
-  post {
-    always {
-      junit allowEmptyResults: true, testResults: '''
-        target/surefire-reports/*.xml,
-        target/failsafe-reports/*.xml
-      '''
-      publishHTML(target: [
-        reportDir: 'target/site/jacoco',
-        reportFiles: 'index.html',
-        reportName: 'JaCoCo Code Coverage',
-        keepAll: true,
-        alwaysLinkToLastBuild: true
-      ])
-      }
+        stage('Build') {
+            steps {
+                bat 'mvn clean compile'
+            }
+        }
+
+
+        stage('Unit Tests') {
+            steps {
+               bat 'mvn test -Dtest=!*SeleniumTest,!*KarateRunnerTestIT'
+            }
+        }
+
+        stage('Coverage Report (JaCoCo)') {
+            steps {
+                bat 'mvn jacoco:report'
+            }
+        }
+
+
+       stage('SonarQube Analysis') {
+           steps {
+              withSonarQubeEnv('LocalSonar') {
+                  bat 'mvn sonar:sonar -Dsonar.projectKey=incident-management'
+              }
+           }
+       }
+
+
+
+        stage('API Tests (Karate)') {
+            steps {
+                bat 'mvn test -Dtest=KarateRunnerTestIT'
+            }
+        }
+
+
+        stage('UI Tests (Selenium)') {
+            when {
+                expression { return params.RUN_UI_TESTS }
+            }
+            steps {
+                bat 'mvn test -Dtest=*SeleniumTest'
+            }
+        }
     }
-  }
+
+    post {
+        always {
+            junit allowEmptyResults: true, testResults: '''
+                target/surefire-reports/*.xml,
+                target/failsafe-reports/*.xml
+            '''
+
+            publishHTML(target: [
+                reportDir: 'target/site/jacoco',
+                reportFiles: 'index.html',
+                reportName: 'JaCoCo Code Coverage',
+                keepAll: true,
+                alwaysLinkToLastBuild: true
+            ])
+
+            archiveArtifacts allowEmptyArchive: true,
+                artifacts: 'target/screenshots/**, target/karate-reports/**'
+        }
+
+        failure {
+            emailext(
+                subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Build failed.\n${env.BUILD_URL}",
+                to: "pranjalibhot0999@gmail.com"
+            )
+        }
+
+        unstable {
+            emailext(
+                subject: "UNSTABLE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Tests failing.\n${env.BUILD_URL}",
+                to: "pranjalibhot0999@gmail.com"
+            )
+        }
+
+        success {
+            echo 'Build Successful!'
+        }
+    }
+}

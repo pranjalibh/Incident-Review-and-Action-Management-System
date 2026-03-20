@@ -31,7 +31,15 @@ class ManagerSeleniumTest {
         WebDriverManager.chromedriver().setup();
 
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new"); // Jenkins safe
+
+
+        String chromePath = System.getenv("CHROME_BIN");
+        if (chromePath != null && !chromePath.isEmpty()) {
+            options.setBinary(chromePath);
+        }
+
+
+        options.addArguments("--headless=new");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--window-size=1920,1080");
