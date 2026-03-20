@@ -26,7 +26,7 @@ Scenario: Retrieve all incidents
   When method get # fetch all incidents
   Then status 200
   And def objectCount = karate.sizeOf(response)
-  And match objectCount >= 1
+  And assert objectCount >= 1
 
 Scenario: Get incident by ID
   Given path '/api/incidents', 1

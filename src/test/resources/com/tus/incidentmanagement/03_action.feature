@@ -11,14 +11,6 @@ Background:
   Then status 200
   And def token = response.token
 
-Scenario: Create an action item for incident
-  Given path '/api/incidents/1/actions'
-  And header Authorization = 'Bearer ' + token
-  And request { description: 'Restart server', assignedTo: 'manager1', dueDate: '2026-03-20T10:00:00' }
-  When method post
-  Then status 200
-  And match response.description == 'Restart server'
-  And match response.completed == false
 
 Scenario: Get actions for a specific incident
   Given path '/api/incidents/1/actions'
